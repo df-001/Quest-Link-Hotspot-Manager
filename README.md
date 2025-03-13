@@ -20,17 +20,17 @@ A simple tool to fix Windows hotspot for use with Quest Link, improving connecti
      - Click **Configure** → **Power Management**
      - Uncheck **Allow the computer to turn off this device to save power** or similar.
 > [!WARNING]
-> If the script cannot find the adapter, write the desired adapter name in the program
-> then restart it and try again.
+> If no hotspot is started, check **Scan for Devices**
+> If the adapter is not found, you must add it manually in settings.
 
 ## Finding Your Adapter Name
 
 To identify your network adapter:
 
-- Navigate to **Control Panel\Network and Internet\Network Connections**
-- Choose the Wireless adapter you want to use and apply it in the program by name.
+- Run **Scan for Devices** in the application
+- Choose the Wireless adapter you want to use and save it in the settings.
 > [!TIP]
-> The adapter name will be the first line of the device e.g. WiFi/Wi-Fi 2
+> The adapter name will be the under **Interface Name**. e.g. WiFi/Wi-Fi 2
 
 ## What does it do
 
