@@ -10,8 +10,11 @@ A simple tool to fix Windows hotspot for use with Quest Link, improving connecti
    - Set the **Network band** to **5GHz**
    - Enable the **Mobile hotspot**
 
-2. **Run the Executable:**
-   - Download and run the provided file.
+2. **Using the app:**
+   - Download and run Quest Link Hotspot Manager.
+   - Click *Scan for Devices* and check the output.
+       - Note the output: `An interface with this name is not registered with the router.`
+       - If you see this error, copy the Interface Name of your Wi-Fi card and save it to adapter name in settings.
 
 3. **Optional Tweaks for Stability:**
    - Disable Wi-Fi power saving mode:
