@@ -217,8 +217,8 @@ class App(CTk.CTk):
 
             menu = pystray.Menu(
                 pystray.MenuItem("Maximise", self.restore_window),
-                pystray.MenuItem("Start Hotspot", self.restore_window),
-                pystray.MenuItem("End Hotspot", self.restore_window),
+                pystray.MenuItem("Start Hotspot", self.start_hotspot),
+                pystray.MenuItem("End Hotspot", self.end_hotspot),
                 pystray.MenuItem("Exit", self.quit_app)
             )
             self.tray_icon = pystray.Icon("QLHM", tray_img, "Quest Link Hotspot Manager", menu)
