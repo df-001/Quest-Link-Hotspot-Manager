@@ -6,6 +6,7 @@ from PIL import Image
 import os 
 import win32com.client 
 import sys
+import darkdetect
 
 with open(r"resource\data.qlhm", "rt") as f:
     adapter_name = f.readline().strip()
@@ -210,10 +211,10 @@ class App(CTk.CTk):
     def start_tray(self):
         def tray_target():
             # Contains tray building resources
-            if cur_theme == "light":
-                tray_img = Image.open(r"resource\light_ico.png")
-            else:
+            if darkdetect.theme().lower() == "dark":
                 tray_img = Image.open(r"resource\dark_ico.png")
+            else:
+                tray_img = Image.open(r"resource\light_ico.png")
 
             menu = pystray.Menu(
                 pystray.MenuItem("Maximise", self.restore_window),
