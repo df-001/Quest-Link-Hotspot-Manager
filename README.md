@@ -1,6 +1,6 @@
 # Quest Link Hotspot Manager
 
-A simple tool to fix Windows hotspot for use with Quest Link, improving connection stability.
+A simple tool to fix *Windows* hotspot for use with Quest Link, improving connection stability.
 
 ## Usage
 > [!NOTE]
@@ -34,6 +34,12 @@ To identify your network adapter:
 - Choose the Wireless adapter you want to use and save it in the settings.
 > [!TIP]
 > The adapter name will be the under **Interface Name**. e.g. WiFi/Wi-Fi 2
+
+## Using the system tray
+
+By default a system tray icon will open with the programs closure, you can drag it out to
+the task bar for easier interaction. The program can be set to launch in this mode as one
+of the start-up arguments within the settings. (Change option in Window/Tray drop down)
 
 ## What does it do
 

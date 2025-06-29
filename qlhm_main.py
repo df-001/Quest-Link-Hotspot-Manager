@@ -7,6 +7,7 @@ import os
 import win32com.client 
 import sys
 import darkdetect
+from windows_toasts import Toast, ToastDisplayImage, WindowsToaster
 
 with open(r"resource\data.qlhm", "rt") as f:
     adapter_name = f.readline().strip()
@@ -22,13 +23,13 @@ def format_commands(adapter_name):
     $connectionProfile = [Windows.Networking.Connectivity.NetworkInformation,Windows.Networking.Connectivity,ContentType=WindowsRuntime]::GetInternetConnectionProfile()
     $tetheringManager = [Windows.Networking.NetworkOperators.NetworkOperatorTetheringManager,Windows.Networking.NetworkOperators,ContentType=WindowsRuntime]::CreateFromConnectionProfile($connectionProfile)
 
-    Start-Sleep -Seconds 2
     netsh wlan set autoconfig enabled=yes interface=$WirelessAdapterName
 
     $tetheringManager.StartTetheringAsync()
-    Start-Sleep -Seconds 2
+    Start-Sleep -Seconds 1
 
     netsh wlan set autoconfig enabled=no interface=$WirelessAdapterName
+    exit
     """.format(adapter_name)
 
     global end_cmd
@@ -39,6 +40,7 @@ def format_commands(adapter_name):
 
     netsh wlan set autoconfig enabled=yes interface=$WirelessAdapterName
     $tetheringManager.StopTetheringAsync()
+    exit
     """.format(adapter_name)
 
     global scan_cmd
@@ -57,8 +59,8 @@ class Settings(CTk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         # Main constructor
         super().__init__(*args, **kwargs)
-        self.geometry("240x300+460+100")
-        self.minsize(width=200, height=300)
+        self.geometry("240x375+460+100")
+        self.minsize(width=200, height=375)
         self.title("Settings")
         self.grid_columnconfigure(0, weight=1)
 
@@ -72,7 +74,7 @@ class Settings(CTk.CTkToplevel):
         self.text_input.insert(0, f"{adapter_name}")
         self.text_input.grid(row=2, column=0, pady=10)
 
-        self.option_menu = CTk.CTkOptionMenu(self, values=["System", "Dark", "Light"], command=self.option_menu_callback)
+        self.option_menu = CTk.CTkOptionMenu(self, values=["System", "Dark", "Light"], command=self.theme_updater)
         self.option_menu.grid(row=3, column=0, padx=(10, 0), pady=20)
 
         self.check_var = CTk.StringVar(value=start_value)
@@ -81,10 +83,13 @@ class Settings(CTk.CTkToplevel):
                                                variable=self.check_var, onvalue="1", offvalue="0")
         self.start_checkbox.grid(row=4, column=0)
 
+        self.startup_menu = CTk.CTkOptionMenu(self, values=["Window", "Tray"], command=self.apply_args)
+        self.startup_menu.grid(row=5, column=0, padx=(10, 0), pady=20)
+
         self.button = CTk.CTkButton(self, text="Apply & Save", command=self.save)
-        self.button.grid(row=5, column=0, padx=(10, 0), pady=30)
+        self.button.grid(row=6, column=0, padx=(10, 0), pady=30)
     
-    def add_to_startup(self, shortcut_name="QLHM", exe_name="qlhm_main.exe"):
+    def add_to_startup(self, args, shortcut_name="QLHM", exe_name="qlhm_main.exe"):
         # Shortcut creation and assignment
         startup_path = os.path.join(os.getenv('APPDATA'), r'Microsoft\Windows\Start Menu\Programs\Startup')
         shortcut_path = os.path.join(startup_path, f"{shortcut_name}.lnk")
@@ -95,6 +100,7 @@ class Settings(CTk.CTkToplevel):
         shell = win32com.client.Dispatch("WScript.Shell")
         shortcut = shell.CreateShortCut(shortcut_path)
         shortcut.TargetPath = exe_full_path
+        shortcut.Arguments = args # Applys arguments to shortcut
         shortcut.WorkingDirectory = exe_dir
         shortcut.IconLocation = exe_full_path
         shortcut.save()
@@ -106,16 +112,29 @@ class Settings(CTk.CTkToplevel):
         if os.path.exists(shortcut_path):
             os.remove(shortcut_path)
     
-    def option_menu_callback(self, choice):
+    def theme_updater(self, choice):
         CTk.set_appearance_mode(choice.lower())
         global cur_theme
         cur_theme = choice.lower()
     
+    def apply_args(self, choice):
+        global args
+        match choice:
+            case "Window":
+                args = "-max"
+            case "Tray":
+                args = "-min"
+    
     def save(self):
+        global args
+        try:
+            args
+        except:
+            args = "-max"
         print("Saving...")
         match self.check_var.get():
             case "1":
-                self.add_to_startup()
+                self.add_to_startup(args)
             case _:
                 self.remove_startup()
         global adapter_name
@@ -164,6 +183,24 @@ class App(CTk.CTk):
 
         self.button = CTk.CTkButton(self, text="End Hotspot", font=("Arial", 14, "bold"), command=self.end_hotspot)
         self.button.grid(column=0, padx=50, pady=10, sticky="ew")
+
+        try:
+            match sys.argv[1]:
+                case "-min":
+                    self.to_tray()
+        except:
+            print("Running")
+
+
+        
+    def create_toast(self, text):
+        toaster = WindowsToaster('Quest Link Hotspot Manager')
+
+        newToast = Toast()
+        newToast.text_fields = [text]
+        newToast.AddImage(ToastDisplayImage.fromPath('C:/Windows/System32/@WLOGO_96x96.png'))
+
+        toaster.show_toast(newToast)
     
     def open_settings_window(self):
         if self.settings_window is None or not self.settings_window.winfo_exists():
@@ -175,19 +212,19 @@ class App(CTk.CTk):
     def scan_devices(self):
         self.status.configure(text=f"Check the Terminal Window")
         run_command(scan_cmd)
-        print("Check the Terminal Window")
+        self.create_toast("Check the opened window.")
         self.refresh_name()
     
     def start_hotspot(self):
-        self.status.configure(text=f"Starting Hotspot...")
+        self.status.configure(text=f"Hotspot Running.")
         run_command(start_cmd)
-        print("Hotspot starting...")
+        self.create_toast("Hotspot Started.")
         self.refresh_name()
 
     def end_hotspot(self):
-        self.status.configure(text=f"Ending Hotspot...")
+        self.status.configure(text=f"Hotspot Ended.")
         run_command(end_cmd)
-        print("Ending hotspot...")
+        self.create_toast("Hotspot Ended.")
         self.refresh_name()
     
     def refresh_name(self):
