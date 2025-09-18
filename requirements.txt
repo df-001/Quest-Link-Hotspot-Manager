@@ -1,5 +1,5 @@
-customtkinter
-pystray
-PIL
-pywin32
-windows_toasts
+customtkinter >= 5.2.2
+pystray >= 0.19.5
+pillow >= 11.3.0
+pywin32 >= 311
+windows_toasts >= 1.3.1
