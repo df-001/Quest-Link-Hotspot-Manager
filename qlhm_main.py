@@ -1,4 +1,5 @@
-import subprocess 
+import subprocess
+import re
 import customtkinter as CTk 
 import threading 
 import pystray 
@@ -23,10 +24,11 @@ def format_commands(adapter_name):
     $connectionProfile = [Windows.Networking.Connectivity.NetworkInformation,Windows.Networking.Connectivity,ContentType=WindowsRuntime]::GetInternetConnectionProfile()
     $tetheringManager = [Windows.Networking.NetworkOperators.NetworkOperatorTetheringManager,Windows.Networking.NetworkOperators,ContentType=WindowsRuntime]::CreateFromConnectionProfile($connectionProfile)
 
+    Start-Sleep -Seconds 2
     netsh wlan set autoconfig enabled=yes interface=$WirelessAdapterName
 
     $tetheringManager.StartTetheringAsync()
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 2
 
     netsh wlan set autoconfig enabled=no interface=$WirelessAdapterName
     exit
@@ -45,15 +47,38 @@ def format_commands(adapter_name):
 
     global scan_cmd
     scan_cmd = """
-    $WirelessAdapterName = \\"{}\\"
+    $WirelessAdapterName = \"{}\"
     netsh interface show interface
     netsh interface show interface $WirelessAdapterName
-    PAUSE
     """.format(adapter_name)
 
 
 def run_command(cmd):
-    subprocess.run(["powershell", "Start-Process", "powershell", "-ArgumentList", f"'-ExecutionPolicy Bypass -Command {cmd}'", "-Verb", "RunAs"], capture_output=True, text=True)
+    result = subprocess.run(
+    ["powershell", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", cmd],
+    capture_output=True,
+    text=True
+    
+    )
+    return result.stdout
+
+class DialogueBox(CTk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        #Main constructor
+        super().__init__(*args, **kwargs)
+        self.geometry("240x375+460+100")
+        self.minsize(width=200, height=375)
+        self.title("Settings")
+        self.grid_columnconfigure(0, weight=1)
+        
+        self.header = CTk.CTkLabel(self, text="Dialogue", font=("Arial", 24, "bold")) # Creates and styles text element
+        self.header.grid(row=0, column=0, padx=10, pady=10) # Positions said element
+
+        self.label = CTk.CTkLabel(self, text="Dialogue appears here", font=("Arial", 14, "bold")) # Creates and styles text element
+        self.label.grid(row=1, column=0, padx=10, pady=10) # Positions said element
+
+        self.button = CTk.CTkButton(self, text="Close", command=self.save)
+        self.button.grid(row=2, column=0, padx=(10, 0), pady=30)
 
 class Settings(CTk.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -140,7 +165,7 @@ class Settings(CTk.CTkToplevel):
         global adapter_name
         adapter_name = self.text_input.get()
         with open(r"resource\data.qlhm", 'w') as f:
-            f.write(f"{adapter_name}\n{cur_theme}\n{self.check_var.get()}")
+            f.write(f"  {adapter_name}\n{cur_theme}\n{self.check_var.get()}")
         
         format_commands(self.text_input.get()) # Formats commands to avoid restart
 
@@ -190,6 +215,7 @@ class App(CTk.CTk):
                     self.to_tray()
         except:
             print("Running")
+            print(scan_cmd)
 
 
         
@@ -211,8 +237,18 @@ class App(CTk.CTk):
 
     def scan_devices(self):
         self.status.configure(text=f"Check the Terminal Window")
-        run_command(scan_cmd)
-        self.create_toast("Check the opened window.")
+        output = run_command(scan_cmd)
+        if output.endswith(".\n\n") == True:
+            print(output)
+            regex1 = re.split(" {2}|\n", output)
+            while "" in regex1:
+                regex1.remove("")
+            print(regex1)
+
+        else:
+            print(output)
+            print("nah")
+        self.create_toast(output)
         self.refresh_name()
     
     def start_hotspot(self):

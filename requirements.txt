@@ -1,0 +1,5 @@
+customtkinter
+pystray
+PIL
+pywin32
+windows_toasts
