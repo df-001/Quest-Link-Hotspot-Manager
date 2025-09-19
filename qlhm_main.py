@@ -247,7 +247,11 @@ class Settings(CTk.CTkToplevel):
         Defines layout and widget attributes
         """
         super().__init__(*args, **kwargs)
-        self.geometry("240x375+160+120")
+        # retrieves size and pos of parent window
+        parent_x, parent_y = app.winfo_x(), app.winfo_y()
+        parent_w, parent_h = app.winfo_width(), app.winfo_height()
+        x, y = 240, 375
+        self.geometry(f"{x}x{y}+{int(((parent_w-x)/2)+parent_x)}+{int(((parent_h-y)/2)+parent_y)}") # centers widget inside parent
         self.resizable(False, False)
         self.title("Settings")
         self.grab_set()
@@ -277,7 +281,9 @@ class Settings(CTk.CTkToplevel):
 
         self.button = CTk.CTkButton(self, text="Apply & Save", command=self.save)
         self.button.grid(row=6, column=0, padx=(10, 0), pady=30)
-    
+
+        print(parent_x)
+        print(((parent_w-x)/2)+parent_x)
     
     def add_to_startup(self, args, shortcut_name="QLHM", exe_name="qlhm_main.exe"):
         """ Creates a shortcut with arguments to the executable and adds it to Startup. """
@@ -344,10 +350,11 @@ class DialogueBox(CTk.CTkToplevel):
         Defines layout and widget attributes
         """
         super().__init__(parent, *args, **kwargs)
-        # fixes the size and centers on screen
-        x = (self.winfo_screenwidth() // 2)
-        y = (self.winfo_screenheight() // 2)
-        self.geometry(f"300x200+{x}+{y}")
+
+        parent_x, parent_y = app.winfo_x(), app.winfo_y()
+        parent_w, parent_h = app.winfo_width(), app.winfo_height()
+        x, y = 300, 200
+        self.geometry(f"{x}x{y}+{int(((parent_w-x)/2)+parent_x)}+{int(((parent_h-y)/2)+parent_y)}")
         self.resizable(False, False)
 
         self.title("Notice")
