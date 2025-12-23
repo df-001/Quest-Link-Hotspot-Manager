@@ -1,4 +1,7 @@
-# Quest Link Hotspot Manager
+# [DEPRECATED] Quest Link Hotspot Manager
+
+> [!CAUTION]
+> This program is no longer necessary thanks to a Windows update patching the original issue.
 
 A simple tool to fix *Windows* hotspot for use with Quest Link, drastically improving connection stability.
 
