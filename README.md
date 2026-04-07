@@ -2,6 +2,11 @@
 
 A simple tool to fix *Windows* hotspot for use with Quest Link, drastically improving connection stability.
 
+## Setup
+1. Run and install through `setup.exe`
+
+2. Launch *Quest Link Hotspot Manager* from Apps or shortcuts.
+
 ## Usage
 > [!NOTE]
 > - Ensure your network adapter supports **5GHz** and has up to date drivers.
