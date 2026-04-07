@@ -1,13 +1,23 @@
 :root {
   --bg-color: #0a0a0a;
-  --card-bg: #141414;
+  --dd-bg: #14141477;
   --text-primary: #ffffff;
   --text-secondary: #a0a0a0;
-  --accent: #f97316;
-  --accent-hover: #ea580c;
   --border: #262626;
   --border-hover: #404040;
-  --accent-glow: rgba(249, 115, 22, 0.15);
+  --accent-glow: rgba(22, 86, 249, 0.25);
+  --accent-glow2: rgba(22, 135, 249, 0.25);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-color: #ffffff;
+    --dd-bg: #f0f0f044;
+    --text-primary: #0a0a0a;
+    --text-secondary: #555555;
+    --border: #d0d0d0;
+    --border-hover: #b0b0b0;
+  }
 }
 
 * {
@@ -58,7 +68,7 @@ body {
 .shape-2 {
   width: 400px;
   height: 400px;
-  background: var(--accent-glow);
+  background: var(--accent-glow2);
   bottom: -100px;
   left: -100px;
 }
@@ -83,26 +93,6 @@ body {
   z-index: 1;
 }
 
-/* Logo Component */
-.logo {
-  width: 64px;
-  height: 64px;
-  background-color: transparent;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 24px;
-}
-
-.logo svg {
-  width: 32px;
-  height: 32px;
-  fill: white;
-}
-
-
-
 .dropdown {
   width: 200px;
   border-radius: 8px;
@@ -115,18 +105,19 @@ body {
 .dropdown-selected {
   padding: 10px;
   border: 1px solid var(--border);
+  font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
-  background: var(--card-bg);
+  background: var(--dd-bg);
 }
 
 .dropdown-options {
   display: none;
   position: absolute;
   width: 100%;
-  border: 1px solid #2b2b2b;
+  border: 1px solid var(--border-hover);
   border-top: none;
-  background: #14141477;
+  background: var(--dd-bg);
   backdrop-filter: blur(4px);
   z-index: 10;
   border-radius: 8px;
@@ -135,11 +126,11 @@ body {
 .dropdown-option {
   padding: 10px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: transform 0.15s ease;
 }
 
 .dropdown-option:hover {
-  background: #23232399;
+  transform: scale(1.05);
 }
 
 .dropdown.open .dropdown-options {
@@ -183,42 +174,15 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--accent);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--accent-hover);
-}
-
-.btn-secondary {
   background-color: transparent;
   color: var(--text-secondary);
   border: 1px solid var(--border);
 }
 
-.btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+.btn-primary:hover {
+  background-color: var(--dd-bg);
   border-color: var(--border-hover);
   color: var(--text-primary);
-}
-
-/* Google Button */
-.btn-google {
-  background-color: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-
-.btn-google:hover {
-  border-color: var(--border-hover);
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.btn-google svg {
-  width: 18px;
-  height: 18px;
 }
 
 /* Divider */
@@ -264,7 +228,11 @@ body {
   color: var(--text-primary);
 }
 
-.auth-status {
+.pnter {
+  cursor: pointer;
+}
+
+.status {
   opacity: 0.5;
   padding-bottom: 16px;
 }

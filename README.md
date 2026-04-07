@@ -30,7 +30,7 @@ The script now changes `ExecutionPolicy` in PowerShell, so no UAC prompt is nece
 
 ## Source code
 
-Use `pip install -r requirements.txt` and run *qlhm_main.py*.
+Use `pip install -r requirements.txt` and run *main.py*.
 
 # Legacy Guide
 

@@ -1,6 +1,20 @@
 import webview
 import subprocess
 import re
+from pathlib import Path
+import json
+import os
+
+CONFIG_FILE = Path(os.getenv("APPDATA")) / "QLHotspot" / "config.json"
+CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+def save_adapter_name(adapter_name: str):
+    CONFIG_FILE.write_text(json.dumps({"adapter_name": adapter_name}))
+
+def load_adapter_name():
+    if CONFIG_FILE.exists():
+        return json.loads(CONFIG_FILE.read_text()).get("adapter_name")
+    return None
 
 run_cmd = """
     $WirelessAdapterName = "{}"
@@ -16,7 +30,6 @@ run_cmd = """
     netsh wlan set autoconfig enabled=no interface=$WirelessAdapterName
     exit
 """
-
 end_cmd = """
     $WirelessAdapterName = "{}"
     $connectionProfile = [Windows.Networking.Connectivity.NetworkInformation,Windows.Networking.Connectivity,ContentType=WindowsRuntime]::GetInternetConnectionProfile()
@@ -26,13 +39,12 @@ end_cmd = """
     $tetheringManager.StopTetheringAsync()
     exit
 """
-
 scan_cmd = "netsh interface show interface"
 
-def format_cmd(script, adapterName):
+def format_cmd(script: str, adapterName: str):
     return script.format(adapterName)
 
-def run_powershell(script: str) -> str:
+def run_powershell(script: str):
     """
     Run multiline PowerShell commands and return stdout.
     
@@ -61,6 +73,8 @@ class Api():
     def refresh(self):
         """
         Parses Powershell return values to update network adapters.
+
+        :return: Payload containing all found adapters and the user's saved adapter.
         """
         
         output = (run_powershell(scan_cmd))
@@ -69,15 +83,21 @@ class Api():
         parsed_output = [i for i in parsed_output if i.strip()]
         adapter_list = parsed_output[8::4]
 
-        return adapter_list
+        stored_name = load_adapter_name()
 
-    def start_hotspot(self, adapter_name):
+        return [adapter_list, stored_name]
+
+    def start_hotspot(self, adapter_name: str):
         run_powershell(format_cmd(run_cmd, adapter_name))
         return True
 
-    def end_hotspot(self, adapter_name):
+    def end_hotspot(self, adapter_name: str):
         run_powershell(format_cmd(end_cmd, adapter_name))
         return True
+
+    def save_adapter(self, adapter_name: str):
+        save_adapter_name(adapter_name)
+        return "Saved."
 
 
 if __name__ == "__main__":

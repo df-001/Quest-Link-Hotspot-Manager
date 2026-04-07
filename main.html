@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quest Link Hotspot Manager</title>
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="icon" type="image/png" href="/nocturne-pfp.png" />
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=wifi_tethering" />
 </head>
@@ -27,7 +26,7 @@
         <h1 class="title">Welcome back</h1>
         <p class="subtitle">Select your WiFi adapter and get started.</p>
 
-        <p id="status" class="auth-status">Not running...</p>
+        <p id="status" class="status">Not running...</p>
 
         <div class="dropdown" id="myDropdown">
           <div class="dropdown-selected">Select an adapter</div>
@@ -36,7 +35,7 @@
           </div>
         </div>
 
-        <button id="start-btn" class="btn btn-google" type="button">
+        <button id="start-btn" class="btn btn-primary" type="button">
             Start Hotspot
         </button>
 
@@ -44,12 +43,12 @@
             <span>or</span>
         </div>
 
-        <button id="end-btn" class="btn btn-secondary" type="button" disabled>
+        <button id="end-btn" class="btn btn-primary" type="button" disabled>
         End Hotspot
         </button>
 
         <div class="footer">
-            <a id="refresh-btn">Refresh</a>
+            <a id="refresh-btn" class="pnter">Refresh</a>
         </div>
     </div>
 

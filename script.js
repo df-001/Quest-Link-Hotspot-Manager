@@ -43,8 +43,13 @@ function updateDropdownOptions(array) {
             selected.textContent = option.textContent;
             adapterName = option.dataset.value;
             dropdown.classList.remove("open");
+
+            pywebview.api.save_adapter(adapterName).then(response => {
+                console.log(response);
+            })
         });
     });
+
 }
 
 window.addEventListener("pywebviewready", () => {
@@ -68,15 +73,19 @@ window.addEventListener("pywebviewready", () => {
         statusText.textContent = "Refreshing...";
 
         pywebview.api.refresh().then(response => {
-            updateDropdownOptions(response);
-            statusText.textContent = "Updated.";
+            updateDropdownOptions(response[0]);
+            statusText.textContent = "Loaded.";
         });
     })
 });
 
 window.addEventListener("pywebviewready", () => {
     pywebview.api.refresh().then(response => {
-        updateDropdownOptions(response);
-        statusText.textContent = "Loaded.";
+        updateDropdownOptions(response[0]);
+        statusText.textContent = `Loaded.`;
+        selected.textContent = response[1];
+        adapterName = response[1];
+        dropdown.classList.remove("open");
+
     });
 });
