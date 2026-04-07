@@ -58,17 +58,15 @@ window.addEventListener("pywebviewready", () => {
         
         pywebview.api.start_hotspot(adapterName).then(response => {
             console.log(response);
-        })
-    })
-});
-
-window.addEventListener("pywebviewready", () => {
+        });
+    });
     endBtn.addEventListener("click", () => {
         statusText.textContent = "Hotspot closed.";
-    })
-});
 
-window.addEventListener("pywebviewready", () => {
+        pywebview.api.end_hotspot(adapterName).then(response => {
+            console.log(response);
+        });
+    });
     refreshBtn.addEventListener("click", () => {
         statusText.textContent = "Refreshing...";
 
@@ -76,10 +74,7 @@ window.addEventListener("pywebviewready", () => {
             updateDropdownOptions(response[0]);
             statusText.textContent = "Loaded.";
         });
-    })
-});
-
-window.addEventListener("pywebviewready", () => {
+    });
     pywebview.api.refresh().then(response => {
         updateDropdownOptions(response[0]);
         statusText.textContent = `Loaded.`;
