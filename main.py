@@ -4,9 +4,28 @@ import re
 from pathlib import Path
 import json
 import os
+import urllib.request
+import json
+import webbrowser
+import threading
 
+CURRENT_VERSION = "v2.0.1"
 CONFIG_FILE = Path(os.getenv("APPDATA")) / "QLHotspot" / "config.json"
 CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+def check_for_updates():
+    try:
+        url = f"https://api.github.com/repos/df-001/Quest-Link-Hotspot-Manager/releases/latest"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=3) as response:
+            data = json.loads(response.read().decode())
+            latest_version = data.get("tag_name")
+            
+            if latest_version and latest_version != CURRENT_VERSION:
+                print(f"Update available: {latest_version}")
+                webbrowser.open(data.get("html_url"))
+    except Exception:
+        pass
 
 def save_adapter_name(adapter_name: str):
     CONFIG_FILE.write_text(json.dumps({"adapter_name": adapter_name}))
@@ -22,12 +41,12 @@ run_cmd = """
     $tetheringManager = [Windows.Networking.NetworkOperators.NetworkOperatorTetheringManager,Windows.Networking.NetworkOperators,ContentType=WindowsRuntime]::CreateFromConnectionProfile($connectionProfile)
 
     Start-Sleep -Seconds 1
-    netsh wlan set autoconfig enabled=yes interface=$WirelessAdapterName
+    netsh wlan set autoconfig enabled=yes interface="$WirelessAdapterName"
 
     $tetheringManager.StartTetheringAsync()
     Start-Sleep -Seconds 2
 
-    netsh wlan set autoconfig enabled=no interface=$WirelessAdapterName
+    netsh wlan set autoconfig enabled=no interface="$WirelessAdapterName"
     exit
 """
 end_cmd = """
@@ -35,7 +54,7 @@ end_cmd = """
     $connectionProfile = [Windows.Networking.Connectivity.NetworkInformation,Windows.Networking.Connectivity,ContentType=WindowsRuntime]::GetInternetConnectionProfile()
     $tetheringManager = [Windows.Networking.NetworkOperators.NetworkOperatorTetheringManager,Windows.Networking.NetworkOperators,ContentType=WindowsRuntime]::CreateFromConnectionProfile($connectionProfile)
 
-    netsh wlan set autoconfig enabled=yes interface=$WirelessAdapterName
+    netsh wlan set autoconfig enabled=yes interface="$WirelessAdapterName"
     $tetheringManager.StopTetheringAsync()
     exit
 """
@@ -101,6 +120,8 @@ class Api():
 
 
 if __name__ == "__main__":
+    threading.Thread(target=check_for_updates, daemon=True).start()
+    
     api = Api()
     webview.create_window(
         "Quest Link Hotspot Manager",
